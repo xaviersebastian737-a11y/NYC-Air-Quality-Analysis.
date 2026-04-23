@@ -5,38 +5,64 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 1. LOAD DATA
-df = pd.read_csv('Air_Quality_and_Health_Impacts.csv')
+Here are the technical details of how I process NYC air quality data using Python (Pandas & Seaborn):
 
-# 2. SCRUBBING (Membersihkan & Menyamakan Data)
+<details>
+<summary><b>1. Load Data</b></summary>
+Mengambil dataset mentah untuk diproses lebih lanjut.
+
+Python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Memuat dataset
+df = pd.read_csv('Air_Quality_and_Health_Impacts.csv')
+</details>
+
+<details>
+<summary><b>2. Scrubbing (Pembersihan Data)</b></summary>
+Memastikan data konsisten dengan memfilter wilayah tertentu dan menyamakan rentang waktu (Time Period).
+
+Python
 # Filter wilayah UHF42 saja
 df_filtered = df[df['Geo Type Name'] == 'UHF42']
 
-# Ambil data Asma 2015-2017
+# Ambil data Asma periode 2015-2017
 df_asthma = df_filtered[(df_filtered['Name'] == 'Asthma emergency departments visits due to Ozone') & 
                         (df_filtered['Time Period'] == '2015-2017')]
 
-# Ambil data Ozon musiman dan hitung rata-ratanya
+# Ambil data Ozon musiman dan hitung rata-ratanya agar sejajar dengan data Asma
 ozone_years = ['Summer 2015', 'Summer 2016', 'Summer 2017']
 df_ozone = df_filtered[(df_filtered['Name'] == 'Ozone (O3)') & (df_filtered['Time Period'].isin(ozone_years))]
 df_ozone_avg = df_ozone.groupby('Geo Place Name')['Data Value'].mean().reset_index()
 df_ozone_avg.columns = ['Geo Place Name', 'Ozone_Level']
+</details>
 
-# 3. MERGE (Menyatukan menjadi df_final)
+<details>
+<summary><b>3. Merge Data (Penyatuan Dataset)</b></summary>
+Menyatukan data kualitas udara dan data kesehatan ke dalam satu tabel final.
+
+Python
+# Menyatukan data kesehatan dan kadar ozon berdasarkan nama wilayah
 df_final = pd.merge(df_asthma[['Geo Place Name', 'Data Value']], 
                      df_ozone_avg, 
                      on='Geo Place Name')
 df_final.columns = ['Wilayah', 'Kasus_Asma', 'Kadar_Ozon']
+</details>
 
-# 4. VISUALISASI (EXPLORE)
+<details>
+<summary><b>4. Exploratory Data Analysis (Visualisasi)</b></summary>
+Membuat scatter plot untuk melihat korelasi antara Ozon dan Kasus Asma.
+
+Python
 plt.figure(figsize=(10, 6))
 sns.scatterplot(data=df_final, x='Kadar_Ozon', y='Kasus_Asma')
 
-# Menambahkan Label
+# Menambahkan Label Informasi
 plt.title('Hubungan Kadar Ozon vs Kasus Asma di NYC (2015-2017)')
 plt.xlabel('Rata-rata Kadar Ozon (ppb)')
-plt.ylabel('Kasus Asma per 100,000 Penduduk')
+plt.ylabel('Kasus_Asma per 100,000 Penduduk')
 
-# Menampilkan Grafik
-print("--- Sedang Menampilkan Grafik... ---")
 plt.show()
+</details>
