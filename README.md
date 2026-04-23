@@ -64,3 +64,9 @@ plt.ylabel('Kasus_Asma per 100,000 Penduduk')
 
 plt.show()
 </details>
+
+### 📊 Analysis Visualization
+
+Below is the scatter plot visualization showing the correlation between average Ozone levels and the number of Asthma cases across different NYC neighborhoods (UHF42):
+
+![Ozone vs Asthma Graph](grafik_ozon_asma.png)
